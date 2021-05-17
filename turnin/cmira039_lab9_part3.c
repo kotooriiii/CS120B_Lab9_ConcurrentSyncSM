@@ -7,7 +7,7 @@
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
  *
- *	Demo Link: 
+ *	Demo Link: https://youtu.be/c-Qy5pY673I
  */
  
 #include <avr/io.h>
@@ -275,7 +275,7 @@ int main(void)
 	//Different period 
 	unsigned long LED3SM_elapsedTime = 300;
     unsigned long BLEDSM_elapsedTime = 1000;
-	unsigned long SSM_elapsedTime = 2;
+	unsigned long SSM_elapsedTime = 2; //for a freq of 250hz (1/0.004)
 	
     const unsigned long timerPeriod = 1;
 	
@@ -310,8 +310,8 @@ int main(void)
 		}
 		
 		if(SSM_elapsedTime >= 2)
-		{
-			tickSoundSM();
+		{ // 2ms period
+			tickSoundSM(); //execute one tick of SSM
 			SSM_elapsedTime = 0;
 			isUpdated = 0x01;
 		}
