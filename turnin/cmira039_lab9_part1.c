@@ -1,7 +1,7 @@
 /*	Author: Carlos Miranda cmira039@ucr.edu
  *  Partner(s) Name: n/a
  *	Lab Section: 23
- *	Assignment: Lab #9  Exercise #3
+ *	Assignment: Lab #9  Exercise #1
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -31,21 +31,6 @@ unsigned char blinkingLED = 0x00;
 
 /* CombineLED SM */
 enum CombineLEDsSM {CLEDSM_INIT, CLEDSM_OUTPUT} CLEDSM_STATE;
-
-/*  SoundSM */
-enum SoundSM {SSM_INIT, SSM_ON, SSM_OFF}  SSM_STATE;
-unsigned char soundState = 0x00;
-
-/* Helper methods */
-unsigned char IPINA()
-{
-	return ~PINA;
-}
-
-unsigned char isA2()
-{
-	return  IPINA() & 0x04;
-}
 
 
 /* Timer functions */
@@ -177,61 +162,6 @@ void tickBlinkingLEDSM()
 	}
 }
 
-void tickSoundSM()
-{
-	switch(SSM_STATE)
-	{
-		case SSM_INIT:
-		if(isA2())
-		{
-			SSM_STATE = SSM_ON;
-		}
-		else
-		{
-			SSM_STATE = SSM_OFF;
-		}
-		break;
-		
-		case SSM_ON:
-		SSM_STATE = SSM_OFF;
-		break;
-		
-		case SSM_OFF:
-		if(isA2())
-		{
-			SSM_STATE = SSM_ON;
-		}
-		else
-		{
-			SSM_STATE = SSM_OFF;
-		}
-		break;
-		
-		default:
-		SSM_STATE = SSM_INIT;
-		break;
-	}
-	
-	switch(SSM_STATE)
-	{
-		case SSM_INIT:
-		soundState = 0x00;
-		break;
-		
-		case SSM_ON:
-		soundState = 0x10;
-		break;
-		
-		case SSM_OFF:
-		soundState = 0x00;
-		break;
-		
-		default:
-		soundState = 0x00;
-		break;
-	}
-}
-
 
 void tickCombineLEDsSM()
 {
@@ -255,7 +185,7 @@ void tickCombineLEDsSM()
 		break;		
 		
 		case CLEDSM_OUTPUT:
-		PORTB = (blinkingLED | threeLEDs) | soundState;
+		PORTB = blinkingLED | threeLEDs;
 		break;
 		
 		default:
@@ -268,14 +198,11 @@ int main(void)
 {
 	
 	//Outputs
-	DDRB = 0xFF; PORTB = 0x00;
-        //Inputs	
-	DDRA = 0x00; PORTA = 0xFF;
-
+	DDRB = 0xFF; PORTB = 0x00; 
+	
 	//Different period 
-	unsigned long LED3SM_elapsedTime = 300;
+	unsigned long LED3SM_elapsedTime = 1000;
     unsigned long BLEDSM_elapsedTime = 1000;
-	unsigned long SSM_elapsedTime = 2;
 	
     const unsigned long timerPeriod = 1;
 	
@@ -285,7 +212,6 @@ int main(void)
 	//Init
 	LED3SM_STATE = LED3SM_INIT;
 	BLEDSM_STATE = BLEDSM_STATE;
-	SSM_STATE = SSM_INIT;
 	CLEDSM_STATE = CLEDSM_INIT;
 	
 	
@@ -295,7 +221,7 @@ int main(void)
 	while(1) 
 	{
 		
-		if (LED3SM_elapsedTime >= 300) 
+		if (LED3SM_elapsedTime >= 1000) 
 		{ // 300 ms period
 			tickThreeLEDsSM(); // Execute one tick of 3LEDSM
 			LED3SM_elapsedTime = 0;    
@@ -309,13 +235,6 @@ int main(void)
 			isUpdated = 0x01;			
 		}
 		
-		if(SSM_elapsedTime >= 2)
-		{
-			tickSoundSM();
-			SSM_elapsedTime = 0;
-			isUpdated = 0x01;
-		}
-		
 		if(isUpdated)
 		{
 			tickCombineLEDsSM();
@@ -326,7 +245,6 @@ int main(void)
 		isUpdated = 0x00;			
 		LED3SM_elapsedTime += timerPeriod;
 		BLEDSM_elapsedTime += timerPeriod;
-		SSM_elapsedTime += timerPeriod;
 	}
 	return 0;
 }
