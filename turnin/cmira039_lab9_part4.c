@@ -7,7 +7,7 @@
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
  *
- *	Demo Link: 
+ *	Demo Link: https://youtu.be/l3qWofnK05g
  */
  
 #include <avr/io.h>
@@ -36,7 +36,9 @@ enum CombineLEDsSM {CLEDSM_INIT, CLEDSM_OUTPUT} CLEDSM_STATE;
 enum FrequencyUpDownSM {FUDSM_INIT, FUDSM_WAIT, FUDSM_INC, FUDSM_WAIT_INC, FUDSM_DEC, FUDSM_WAIT_DEC} FUDSM_STATE;
 const unsigned char frequencySize = 0x05; //size is 5
 unsigned char frequencies[5] = {20, 10, 6, 4, 2}; //respective following frequencies in order: {50hz, 100hz, 166.667hz, 250hz, 500hz}
-//Special note: Frequency is able to be between 20hz - 500hz. 20hz because its lowest audible human hearing frequency and 500hz because its the highest the period is able to produce. For this experiment I've bounded the frequency from 50hz to 500hz and have 5 intervals. We can remove this boundary by increasing the array size.
+//SPECIAL NOTE: Frequency is able to be between 20hz - 500hz. 20hz because its lowest audible human hearing frequency and 500hz 
+//because its the highest the period is able to produce. For this experiment I've bounded the frequency from 50hz to 500hz and have 5 intervals. 
+//We can remove this boundary by increasing the array size.
 unsigned char frequencyIndex = 0x02; //start in middle of arr
 
 /*  SoundSM */
@@ -440,14 +442,16 @@ int main(void)
 			isUpdated = 0x01;			
 		}
 		
+		//before SSM so we can adjust the frequency
 		if (FUDSM_elapsedTime >= 1)
-		{ // 1 ms period
+		{ // 1 ms period, we need to be able to note right away since the SSM may look for period of 1ms.
          	tickFrequencyUpDownSM(); // Execute one tick of FUDSM
 			FUDSM_elapsedTime = 0;
 			isUpdated = 0x01;			
 		}
 		
-		if(SSM_elapsedTime >= frequencies[frequencyIndex])
+		//listens to current index of freq
+		if(SSM_elapsedTime >= frequencies[frequencyIndex]) //dynamic since we can get diff frequency
 		{
 			tickSoundSM();
 			SSM_elapsedTime = 0;
