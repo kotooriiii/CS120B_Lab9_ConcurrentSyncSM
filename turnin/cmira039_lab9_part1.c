@@ -7,7 +7,7 @@
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
  *
- *	Demo Link: 
+ *	Demo Link: https://youtu.be/NkqUO21EtZE
  */
  
 #include <avr/io.h>
@@ -222,7 +222,7 @@ int main(void)
 	{
 		
 		if (LED3SM_elapsedTime >= 1000) 
-		{ // 300 ms period
+		{ // 1000 ms period
 			tickThreeLEDsSM(); // Execute one tick of 3LEDSM
 			LED3SM_elapsedTime = 0;    
 			isUpdated = 0x01;			
